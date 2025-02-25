@@ -288,7 +288,7 @@ def preprocess_image(img: np.ndarray) -> np.ndarray:
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     return blurred
 
-async def fetch_image_data_from_api(limit: int = 30, sellerId: str = 'A3OBH97MEO1982'):
+async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
     api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
     # api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
     
@@ -321,20 +321,22 @@ def get_mock_image_data():
     ]
 
 def main():
-    LOOP_COUNT = 1000  # ルー��回数を100に��定
+    LOOP_COUNT = 100000000  # ルー��回数を100に��定
     
     for i in range(LOOP_COUNT):
         try:
             print(f"\nStarting iteration {i + 1}/{LOOP_COUNT}")
             start_time = time.time()
             
-            # APIか����ー��を取得し����ース
-            image_data = asyncio.run(fetch_image_data_from_api(limit=30))
+            # APIかーを取得しース
+            image_data = asyncio.run(fetch_image_data_from_api(limit=100, sellerId='A3OBH97MEO1982'))
+
             # image_data = get_mock_image_data()
             
             if len(image_data) == 0:
-                print("No images to process, skipping iteration")
-                break
+                print("No images to process, waiting 600 seconds...")
+                time.sleep(600)  # 600秒(10分)待機
+                continue
 
             print(f"Fetched {len(image_data)} images to process")
             
