@@ -325,7 +325,7 @@ def main():
     
     for i in range(LOOP_COUNT):
         try:
-            print(f"\nStarting iteration {i + 1}/{LOOP_COUNT}")
+            # print(f"\nStarting iteration {i + 1}/{LOOP_COUNT}")
             start_time = time.time()
             
             # APIかーを取得しース
@@ -338,7 +338,7 @@ def main():
                 time.sleep(600)  # 600秒(10分)待機
                 continue
 
-            print(f"Fetched {len(image_data)} images to process")
+            # print(f"Fetched {len(image_data)} images to process")
             
             # Google Drive上のロゴディレクトリを使用
             # logos_dir = '/content/drive/MyDrive/logo_detection/logos'
@@ -360,7 +360,8 @@ def main():
             # # 結果をAPIにPOST
             success = asyncio.run(post_results_to_api(json_results))
             if success:
-                print("Results successfully posted to API")
+                # print("Results successfully posted to API")
+                pass
             else:
                 print("Failed to post results to API")
             
@@ -368,9 +369,7 @@ def main():
             elapsed_time = time.time() - start_time
             print("Iteration " + str(i + 1) + ": " + 
                   str(detected_count) + "/" + str(len(json_results)) + 
-                  " logos detected in " + str(round(elapsed_time, 2)) + " seconds")
-            
-            time.sleep(1)
+                  " logos detected in " + str(round(elapsed_time, 0)) + " seconds")
             
         except Exception as e:
             print(f"Error in iteration {i + 1}: {str(e)}")
