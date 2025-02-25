@@ -330,7 +330,7 @@ def main():
             start_time = time.time()
             
             # APIかーを取得しース
-            image_data = asyncio.run(fetch_image_data_from_api(limit=100, sellerId='A18K0XW8117NAY'))
+            image_data = asyncio.run(fetch_image_data_from_api(limit=100, sellerId=''))
 
             # image_data = get_mock_image_data()
             
