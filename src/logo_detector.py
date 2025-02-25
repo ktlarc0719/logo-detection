@@ -289,8 +289,8 @@ def preprocess_image(img: np.ndarray) -> np.ndarray:
     return blurred
 
 async def fetch_image_data_from_api(limit: int = 30, sellerId: str = 'A3OBH97MEO1982'):
-    # api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
-    api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
+    api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
+    # api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
     
     async with aiohttp.ClientSession() as session:
         async with session.get(api_url) as response:
@@ -302,9 +302,8 @@ async def fetch_image_data_from_api(limit: int = 30, sellerId: str = 'A3OBH97MEO
 
 async def post_results_to_api(results: List[Dict]):
     """検出結果をAPIにPOST"""
-    # api_url = "https://your-api-endpoint.com/api/rex/inventory/logoDetection/updateResults"
-    # api_url = "https://rex-server.f5.si/api/rex/inventory/logo-detection/update-results"
-    api_url = "http://localhost:3000/api/rex/inventory/logo-detection/update-results"
+    api_url = "https://rex-server.f5.si/api/rex/inventory/logo-detection/update-results"
+    # api_url = "http://localhost:3000/api/rex/inventory/logo-detection/update-results"
     async with aiohttp.ClientSession() as session:
         async with session.post(api_url, json=results) as response:
             if response.status != 200:
