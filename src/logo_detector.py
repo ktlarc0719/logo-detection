@@ -290,8 +290,8 @@ def preprocess_image(img: np.ndarray) -> np.ndarray:
     return blurred
 
 async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
-    # api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
-    api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
+    api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
+    # api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}"
     
     async with aiohttp.ClientSession() as session:
         async with session.get(api_url) as response:
