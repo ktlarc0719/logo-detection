@@ -254,6 +254,7 @@ def display_results(all_results: List[Dict], show_images: bool = False) -> List[
             'id': image_result['id'],
             'brands': brands if brands else None,
             'bestMatch': sorted_brands[0]['brand'] if sorted_brands else None,
+            'status': 'done',
             'updated_at': current_utc
         })
         
@@ -329,7 +330,7 @@ def main():
             start_time = time.time()
             
             # APIかーを取得しース
-            image_data = asyncio.run(fetch_image_data_from_api(limit=100, sellerId='A3OBH97MEO1982'))
+            image_data = asyncio.run(fetch_image_data_from_api(limit=100, sellerId=''))
 
             # image_data = get_mock_image_data()
             
