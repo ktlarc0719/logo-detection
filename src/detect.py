@@ -322,60 +322,40 @@ def get_mock_image_data():
     ]
 
 def main():
-    LOOP_COUNT = 100000000  # ルー��回数を100に��定
-    
-    for i in range(LOOP_COUNT):
-        try:
-            # print(f"\nStarting iteration {i + 1}/{LOOP_COUNT}")
-            start_time = time.time()
-            
-            # APIかーを取得しース
-            image_data = asyncio.run(fetch_image_data_from_api(limit=100, sellerId=''))
+    try:
+        start_time = time.time()
+        
+        # APIからデータを取得
+        image_data = asyncio.run(fetch_image_data_from_api(limit=1, sellerId=''))
+        
+        if len(image_data) == 0:
+            print("No images to process")
+            return
 
-            # image_data = get_mock_image_data()
-            
-            if len(image_data) == 0:
-                print("No images to process, waiting 600 seconds...")
-                time.sleep(600)  # 600秒(10分)待機
-                continue
+        logos_dir = 'data/logos'
 
-            # print(f"Fetched {len(image_data)} images to process")
-            
-            # Google Drive上のロゴディレクトリを使用
-            # logos_dir = '/content/drive/MyDrive/logo_detection/logos'
-            logos_dir = 'data/logos'
+        if not os.path.exists(logos_dir):
+            print(f"Error: Logos directory '{logos_dir}' does not exist")
+            return
 
-            if not os.path.exists(logos_dir):
-                print(f"Error: Logos directory '{logos_dir}' does not exist")
-                return
- 
-            # 非同期処理の実行
-            results = asyncio.run(process_multiple_images(image_data, logos_dir))
-            
-            # 結果の取得
-            json_results = display_results(results, show_images=False)
-            
-            # 検出数の集計
-            detected_count = sum(1 for result in json_results if result['brands'] is not None)
-            
-            # # 結果をAPIにPOST
-            success = asyncio.run(post_results_to_api(json_results))
-            if success:
-                # print("Results successfully posted to API")
-                pass
-            else:
-                print("Failed to post results to API")
-            
-            # 処理時間と検出数の出力
-            elapsed_time = time.time() - start_time
-            print("Iteration " + str(i + 1) + ": " + 
-                  str(detected_count) + "/" + str(len(json_results)) + 
-                  " logos detected in " + str(round(elapsed_time, 0)) + " seconds")
-            
-        except Exception as e:
-            print(f"Error in iteration {i + 1}: {str(e)}")
-            time.sleep(1)
-            continue
+        # 非同期処理の実行
+        results = asyncio.run(process_multiple_images(image_data, logos_dir))
+        
+        # 結果の取得
+        json_results = display_results(results, show_images=False)
+        
+        # 検出数の集計
+        detected_count = sum(1 for result in json_results if result['brands'] is not None)
+        
+        # 結果をAPIにPOST
+        success = asyncio.run(post_results_to_api(json_results))
+        
+        # 処理時間と検出数の出力
+        elapsed_time = time.time() - start_time
+        print(f"Detected: {detected_count}/{len(json_results)} logos in {round(elapsed_time, 0)} seconds")
+        
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
 
 if __name__ == "__main__":
     main()
