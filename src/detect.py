@@ -338,7 +338,6 @@ def main():
             print("No images to process")
             return
 
-
         # 絶対パスを使用するように変更
         current_dir = os.path.dirname(os.path.abspath(__file__))
         logos_dir = os.path.join(os.path.dirname(current_dir), 'data', 'logos')
