@@ -194,8 +194,8 @@ async def process_multiple_images(image_data: List[Dict[str, str]], logos_dir: s
     async with aiohttp.ClientSession() as session:
         tasks = []
         # CPU コア数に基づいて同時実行数を制限
-        max_concurrent = os.cpu_count() or 4  # CPU コア数が取得できない場合は4
-        # max_concurrent = 4  # CPU コア数が取得できない場合は4
+        max_concurrent = os.cpu_count() or 2  # CPU コア数が取得できない場合は4
+        max_concurrent =max_concurrent * 2  # CPU コア数が取得できない場合は4
         semaphore = asyncio.Semaphore(max_concurrent)
         
         # バッチサイズを定義
