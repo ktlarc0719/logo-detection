@@ -294,7 +294,7 @@ async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
         # グローバルIPの取得
         ip_response = await session.get('https://api.ipify.org?format=json')
         global_ip = (await ip_response.json())['ip']
-        print(f"現在のグローバルIP: {global_ip}")
+        # print(f"現在のグローバルIP: {global_ip}")
         
         api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}"
         # api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}" 
