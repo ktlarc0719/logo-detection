@@ -300,6 +300,7 @@ async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
         # api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}" 
         
         
+
         async with session.get(api_url) as response:
             if response.status == 200:
                 data = await response.json()
