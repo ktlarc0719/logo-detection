@@ -331,7 +331,7 @@ def main():
         start_time = time.time()
         
         # APIからデータを取得
-        image_data = asyncio.run(fetch_image_data_from_api(limit=2, sellerId=''))
+        image_data = asyncio.run(fetch_image_data_from_api(limit=10, sellerId=''))
         
         if len(image_data) == 0:
             print("No images to process")
