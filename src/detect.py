@@ -296,8 +296,8 @@ async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
         global_ip = (await ip_response.json())['ip']
         print(f"現在のグローバルIP: {global_ip}")
         
-        # api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}"
-        api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}" 
+        api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}"
+        # api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}" 
         
         async with session.get(api_url) as response:
             if response.status == 200:
@@ -309,7 +309,7 @@ async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
 async def post_results_to_api(results: List[Dict]):
     """検出結果をAPIにPOST"""
     api_url = "https://rex-server.f5.si/api/rex/inventory/logo-detection/update-results"
-    api_url = "http://localhost:3000/api/rex/inventory/logo-detection/update-results"
+    # api_url = "http://localhost:3000/api/rex/inventory/logo-detection/update-results"
     async with aiohttp.ClientSession() as session:
         async with session.post(api_url, json=results) as response:
             if response.status != 200:
