@@ -254,9 +254,9 @@ def display_results(all_results: List[Dict], show_images: bool = False) -> List[
             'id': image_result['id'],
             'brands': brands if brands else None,
             'bestMatch': sorted_brands[0]['brand'] if sorted_brands else None,
-            'status': 'done',
+            'status': 'DONE',
             'updated_at': current_utc
-        })
+        });
         
         # 画像表示部分
         if show_images and brands:
@@ -308,7 +308,12 @@ async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
 
 async def post_results_to_api(results: List[Dict]):
     """検出結果をAPIにPOST"""
-    api_url = "https://rex-server.f5.si/api/rex/inventory/logo-detection/update-results"
+    
+     # グローバルIPの取得
+    ip_response = await session.get('https://api.ipify.org?format=json')
+    global_ip = (await ip_response.json())['ip']
+    
+    api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/update-results?ip={global_ip}"
     # api_url = "http://localhost:3000/api/rex/inventory/logo-detection/update-results"
     async with aiohttp.ClientSession() as session:
         async with session.post(api_url, json=results) as response:
