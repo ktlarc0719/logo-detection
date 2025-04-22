@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
 import json
 import time
+import random
 
 async def download_image_async(session: aiohttp.ClientSession, url: str) -> np.ndarray:
     """非同期で画像をダウンロード"""
@@ -253,8 +254,8 @@ def display_results(all_results: List[Dict], show_images: bool = False) -> List[
             # 'ver': 1,
             'id': image_result['id'],
             'brands': brands if brands else None,
-            'bestMatch': sorted_brands[0]['brand'] if sorted_brands else None,
-            'status': 'DONE',
+            'brand': sorted_brands[0]['brand'] if sorted_brands else None,
+            'status': 'done',
             'updated_at': current_utc
         });
         
@@ -331,6 +332,11 @@ def get_mock_image_data():
 
 def main():
     try:
+        # ランダムディレイを追加（1～3秒）
+        delay = random.uniform(1.0, 3.0)
+        # print(f"Starting with delay of {delay:.2f} seconds...")
+        time.sleep(delay)
+        
         start_time = time.time()
         
         # APIからデータを取得
