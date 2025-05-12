@@ -324,14 +324,16 @@ async def post_results_to_api(results: List[Dict]):
 def get_mock_image_data():
     return [
         {'id': '1', 'url': 'https://m.media-amazon.com/images/I/61IahNYDi0L.jpg'}, #True
-        {'id': '2', 'url': 'https://m.media-amazon.com/images/I/41j0X3rxIgL.jpg'}, #False
-        {'id': '3', 'url': 'https://static.mercdn.net/item/detail/orig/photos/m80964885046_1.jpg'},
-        {'id': '4', 'url': 'https://static.mercdn.net/item/detail/orig/photos/m19309783385_1.jpg'},
-        {'id': '5', 'url': 'https://m.media-amazon.com/images/I/61IahNYDi0L.jpg'},
+        {'id': '2', 'url': 'https://m.media-amazon.com/images/I/715wk9sWGSL._AC_SL1100_.jpg'}, #トミカ
+        {'id': '3', 'url': 'https://m.media-amazon.com/images/I/81l59OUKYhL._AC_SL1500_.jpg'}, #タカラトミー
+        {'id': '4', 'url': 'https://m.media-amazon.com/images/I/81eyzIVnxbL._AC_SY879_.jpg'}, #SEGA
     ]
 
 def main():
     try:
+
+        dev_mode = False
+
         # ランダムディレイを追加（1～3秒）
         delay = random.uniform(1.0, 3.0)
         # print(f"Starting with delay of {delay:.2f} seconds...")
@@ -340,8 +342,10 @@ def main():
         start_time = time.time()
         
         # APIからデータを取得
-        image_data = asyncio.run(fetch_image_data_from_api(limit=10, sellerId=''))
-        
+        if not dev_mode:
+            image_data = asyncio.run(fetch_image_data_from_api(limit=10, sellerId=''))
+        else:
+            image_data = get_mock_image_data()
 
         if len(image_data) == 0:
             print("No images to process")
@@ -361,11 +365,15 @@ def main():
         # 結果の取得
         json_results = display_results(results, show_images=False)
         
+        if dev_mode:
+            print(json_results)
+
         # 検出数の集計
         detected_count = sum(1 for result in json_results if result['brands'] is not None)
         
         # 結果をAPIにPOST
-        success = asyncio.run(post_results_to_api(json_results))
+        if not dev_mode:
+            success = asyncio.run(post_results_to_api(json_results))
         
         # 処理時間と検出数の出力
         elapsed_time = time.time() - start_time
