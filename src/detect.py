@@ -333,7 +333,6 @@ def main():
     try:
 
         dev_mode = False
-
         # ランダムディレイを追加（1～3秒）
         delay = random.uniform(1.0, 3.0)
         # print(f"Starting with delay of {delay:.2f} seconds...")
