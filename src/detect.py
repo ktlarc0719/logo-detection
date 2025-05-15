@@ -340,6 +340,7 @@ def main():
         
         start_time = time.time()
         
+        
         # APIからデータを取得
         if not dev_mode:
             image_data = asyncio.run(fetch_image_data_from_api(limit=10, sellerId=''))
