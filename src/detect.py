@@ -329,7 +329,6 @@ def get_mock_image_data():
         {'id': '4', 'url': 'https://m.media-amazon.com/images/I/81eyzIVnxbL._AC_SY879_.jpg'}, #SEGA
     ]
 
-
 def main():
     try:
 
