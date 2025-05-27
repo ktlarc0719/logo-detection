@@ -32,7 +32,8 @@ async def download_image_async(session: aiohttp.ClientSession, url: str) -> np.n
 async def process_single_image(session: aiohttp.ClientSession, 
                              target_url: str, 
                              logos_dir: str,
-                             image_id: str = None) -> Dict:
+                             image_id: str = None,
+                             target_logo: List[str] = None) -> Dict:
     """1つの画像に対するロゴ検出処理"""
     try:
         # 画像のダウンロード
@@ -40,7 +41,7 @@ async def process_single_image(session: aiohttp.ClientSession,
         if target_img_color is None:
             return {'url': target_url, 'error': 'Failed to download image', 'results': [], 'id': image_id}
         
-        results = detect_multiple_logos_for_image(target_img_color, logos_dir)
+        results = detect_multiple_logos_for_image(target_img_color, logos_dir, target_logo)
         
         return {
             'url': target_url,
@@ -50,7 +51,7 @@ async def process_single_image(session: aiohttp.ClientSession,
     except Exception as e:
         return {'url': target_url, 'error': str(e), 'results': [], 'id': image_id}
 
-def detect_multiple_logos_for_image(target_img_color: np.ndarray, logos_dir: str) -> List[Dict]:
+def detect_multiple_logos_for_image(target_img_color: np.ndarray, logos_dir: str, target_logo: List[str] = None) -> List[Dict]:
     """1つの画像に対する複数ロゴの検出（並列処理化）"""
     # 閾値の設定
 
@@ -63,7 +64,17 @@ def detect_multiple_logos_for_image(target_img_color: np.ndarray, logos_dir: str
         logo_files = [f for f in os.listdir(logos_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
         if not logo_files:
             raise ValueError(f"No logo images found in {logos_dir}")
-
+            
+        # target_logoが指定されている場合、対象のロゴファイルのみをフィルタリング
+        if target_logo:
+            filtered_logo_files = []
+            for logo_name in target_logo:
+                matching_files = [f for f in logo_files if os.path.splitext(f)[0] == logo_name]
+                filtered_logo_files.extend(matching_files)
+            
+            if filtered_logo_files:
+                logo_files = filtered_logo_files
+                
         def process_logo(logo_file: str) -> Dict:
             try:
                 logo_path = os.path.join(logos_dir, logo_file)
@@ -210,7 +221,8 @@ async def process_multiple_images(image_data: List[Dict[str, str]], logos_dir: s
                         session=session,
                         target_url=data['url'],
                         logos_dir=logos_dir,
-                        image_id=data['id']
+                        image_id=data['id'],
+                        target_logo=data.get('targetLogo')
                     )
                     results.append(result)
             return results
@@ -303,7 +315,7 @@ async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
         async with session.get(api_url) as response:
             if response.status == 200:
                 data = await response.json()
-                return [{'id': item['id'], 'url': item['url']} for item in data]
+                return [{'id': item['id'], 'url': item['url'], 'targetLogo': item['targetLogo']} for item in data]
             else:
                 raise Exception(f"API request failed with status {response.status}")
 
@@ -323,23 +335,23 @@ async def post_results_to_api(results: List[Dict]):
 
 def get_mock_image_data():
     return [
-        {'id': '1', 'url': 'https://m.media-amazon.com/images/I/61IahNYDi0L.jpg'}, #True
-        {'id': '2', 'url': 'https://m.media-amazon.com/images/I/715wk9sWGSL._AC_SL1100_.jpg'}, #トミカ
-        {'id': '3', 'url': 'https://m.media-amazon.com/images/I/81l59OUKYhL._AC_SL1500_.jpg'}, #タカラトミー
-        {'id': '4', 'url': 'https://m.media-amazon.com/images/I/81eyzIVnxbL._AC_SY879_.jpg'}, #SEGA
+        # {'id': '1', 'url': 'https://m.media-amazon.com/images/I/61IahNYDi0L.jpg'}, #True
+        # {'id': '2', 'url': 'https://m.media-amazon.com/images/I/715wk9sWGSL._AC_SL1100_.jpg'}, #トミカ
+        # {'id': '3', 'url': 'https://m.media-amazon.com/images/I/81l59OUKYhL._AC_SL1500_.jpg'}, #タカラトミー
+        # {'id': '4', 'url': 'https://static.mercdn.net/item/detail/orig/photos/m75598668629_1.jpg?1748318634', 'targetLogo': 'SEGA'}, #SEGA
+        {'id': '5', 'url': 'https://static.mercdn.net/item/detail/orig/photos/m14233451881_1.jpg?1748318014', 'targetLogo': None}, #任天堂スイッチ
     ]
 
 def main():
     try:
 
-        dev_mode = False
+        dev_mode = True
         # ランダムディレイを追加（1～3秒）
         delay = random.uniform(1.0, 3.0)
         # print(f"Starting with delay of {delay:.2f} seconds...")
         time.sleep(delay)
         
         start_time = time.time()
-
 
         # APIからデータを取得
         if not dev_mode:
