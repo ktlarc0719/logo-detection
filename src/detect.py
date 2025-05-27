@@ -309,7 +309,7 @@ async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
         global_ip = (await ip_response.json())['ip']
         # print(f"現在のグローバルIP: {global_ip}")
         
-        api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}"
+        api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?ip={global_ip}"
         # api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}" 
         
         async with session.get(api_url) as response:
@@ -317,7 +317,13 @@ async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
                 data = await response.json()
                 return [{'id': item['id'], 'url': item['url'], 'targetLogo': item['targetLogo']} for item in data]
             else:
-                raise Exception(f"API request failed with status {response.status}")
+                error_text = await response.text()
+                try:
+                    error_json = json.loads(error_text)
+                    error_message = error_json.get('error', f"API request failed with status {response.status}")
+                except:
+                    error_message = f"API request failed with status {response.status}: {error_text}"
+                raise Exception(error_message)
 
 async def post_results_to_api(results: List[Dict]):
     """検出結果をAPIにPOST"""
