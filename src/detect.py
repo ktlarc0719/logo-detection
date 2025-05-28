@@ -397,7 +397,8 @@ def main():
         print(f"{detected_count}/{len(json_results)} {round(elapsed_time, 0)}seconds")
         
         if detected_count > 0:
-            print(f"{json_results}")
+            filtered_results = [result for result in json_results if result['brands'] is not None]
+            print(f"{filtered_results}")
     except Exception as e:
         print(f"Error occurred: {str(e)}")
 
