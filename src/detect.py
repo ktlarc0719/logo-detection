@@ -302,14 +302,13 @@ def preprocess_image(img: np.ndarray) -> np.ndarray:
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     return blurred
 
-async def fetch_image_data_from_api(limit: int = 30, sellerId: str = ''):
+async def fetch_image_data_from_api(limit: int = 30):
     async with aiohttp.ClientSession() as session:  # ここでセッションを作成
         # グローバルIPの取得
         ip_response = await session.get('https://api.ipify.org?format=json')
         global_ip = (await ip_response.json())['ip']
-        # print(f"現在のグローバルIP: {global_ip}")
         
-        api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?ip={global_ip}"
+        api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?ip={global_ip}&limit={limit}"
         # api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}" 
         
         async with session.get(api_url) as response:
@@ -350,18 +349,13 @@ def get_mock_image_data():
 
 def main():
     try:
-
         dev_mode = False
-        # ランダムディレイを追加（1～3秒）
-        delay = random.uniform(1.0, 3.0)
-        # print(f"Starting with delay of {delay:.2f} seconds...")
-        time.sleep(delay)
         
         start_time = time.time()
 
         # APIからデータを取得
         if not dev_mode:
-            image_data = asyncio.run(fetch_image_data_from_api(limit=10, sellerId=''))
+            image_data = asyncio.run(fetch_image_data_from_api(limit=10))
         else:
             image_data = get_mock_image_data()
 
