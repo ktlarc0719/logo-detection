@@ -46,7 +46,8 @@ async def process_single_image(session: aiohttp.ClientSession,
         return {
             'url': target_url,
             'id': image_id,
-            'results': results
+            'results': results,
+            'targetLogo': target_logo
         }
     except Exception as e:
         return {'url': target_url, 'error': str(e), 'results': [], 'id': image_id}
@@ -258,7 +259,7 @@ def display_results(all_results: List[Dict], show_images: bool = False) -> List[
             }
             for result in image_result['results']
             if result['score'] >= 3
-        ]
+        ];
         
         # 全ての画像に対して結果を出力
         sorted_brands = sorted(brands, key=lambda x: x['score'], reverse=True) if brands else []
@@ -268,7 +269,8 @@ def display_results(all_results: List[Dict], show_images: bool = False) -> List[
             'brands': brands if brands else None,
             'brand': sorted_brands[0]['brand'] if sorted_brands else None,
             'status': 'done',
-            'updated_at': current_utc
+            'updated_at': current_utc,
+            'targetLogo': image_result['targetLogo']
         });
         
         # 画像表示部分
@@ -307,8 +309,11 @@ async def fetch_image_data_from_api(limit: int = 30):
         # グローバルIPの取得
         ip_response = await session.get('https://api.ipify.org?format=json')
         global_ip = (await ip_response.json())['ip']
+
+        # バージョン アプリが更新できているか確認用
+        version = 1
         
-        api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?ip={global_ip}&limit={limit}"
+        api_url = f"https://rex-server.f5.si/api/rex/inventory/logo-detection/get?ip={global_ip}&version={version}"
         # api_url = f"http://localhost:3000/api/rex/inventory/logo-detection/get?limit={limit}&sellerId={sellerId}&ip={global_ip}" 
         
         async with session.get(api_url) as response:
@@ -389,8 +394,10 @@ def main():
         
         # 処理時間と検出数の出力
         elapsed_time = time.time() - start_time
-        print(f"Detected: {detected_count}/{len(json_results)} logos in {round(elapsed_time, 0)} seconds")
+        print(f"{detected_count}/{len(json_results)} {round(elapsed_time, 0)}seconds")
         
+        if detected_count > 0:
+            print(f"{json_results}")
     except Exception as e:
         print(f"Error occurred: {str(e)}")
 
