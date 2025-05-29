@@ -24,11 +24,11 @@ while True:
         print(f"Execution time: {execution_time:.2f} seconds")
         
         # 処理が10秒未満の場合、残りの時間を待機
-        wait_time = max(30 - execution_time, 0)
+        wait_time = max(60 - execution_time, 0)
         if wait_time > 0:
             print(f"Waiting for {wait_time:.2f} seconds")
             time.sleep(wait_time)
         
     except Exception as e:
         print(f"Error running detect.py: {str(e)}")
-        time.sleep(30)  # エラー時は通常通り30秒待機
+        time.sleep(60)  # エラー時は通常通り30秒待機
