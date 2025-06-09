@@ -208,11 +208,11 @@ async def process_multiple_images(image_data: List[Dict[str, str]], logos_dir: s
         tasks = []
         # CPU コア数に基づいて同時実行数を制限
         max_concurrent = os.cpu_count() or 2  # CPU コア数が取得できない場合は4
-        max_concurrent =max_concurrent * 2  # CPU コア数が取得できない場合は4
+        # max_concurrent =max_concurrent * 2  # CPU コア数が取得できない場合は4
         semaphore = asyncio.Semaphore(max_concurrent)
         
         # バッチサイズを定義
-        BATCH_SIZE = 40
+        BATCH_SIZE = 30
         
         async def process_batch(batch_data):
             results = []
